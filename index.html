@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+button {
+      width: 112px;
+      height: 45px;
+      left: 300px;
+      background-color: rgb(230, 230, 123);
+      border-radius: 18px;
+      border-style: solid;
+    }
+</style>
+</head>
+<body>
+<canvas id="myCanvas" width="400" height="400" style="border:1px solid #000000;"  onmousedown="myFunction1(event,this);" ></canvas>
+<button class="button" onclick="btnClick()" name="PLAY">PLAY</button>
+<body onload="loadIni();">
+<p>Electrician must connect all toggle switches (shall be red).</p>
+<p>But, there is a problem: while toggle, nearby switches also toggling. Can you help?</p>
+<p id="demo"></p>
+<script>
+var arrxx = new Array(64);
+var timerId;
+
+function loadField1(){
+   var c = document.getElementById("myCanvas");	
+   var ctx = c.getContext("2d");
+    ctx.clearRect(0,0,400,400);
+      for(var i=0; i<8; i++){
+         for(var j=0; j<8; j++){
+           ctx.strokeRect(i*50,j*50,50,50);         
+           arrxx[i+(j*8)]=0;                  
+                               }
+                           }
+   checkProgress(); 
+                  }
+
+function btnClick(){
+clearInterval(timerId);
+loadField1();
+}
+
+function loadIni(){
+loadField1();
+timerId = setInterval(idleRun, 2000); 
+}
+
+function myFunction1(e,c) {
+  var rect = c.getBoundingClientRect();  
+  var x = Math.floor((e.clientX - rect.left-2)/50);
+  var y = Math.floor((e.clientY - rect.top-2)/50);
+      togglSwitch(x,y);  
+      checkProgress();
+                         }
+
+function togglSwitch(x,y){
+	var a0 = x+y*8;
+	if(a0<0 || a0>63){return;}
+        var a1 = a0-1;
+	var a2 = a0+1;
+	var a3 = a0-8;
+	var a4 = a0+8;
+	chSwitch(a0);
+	if (a1 % 8 != 7){chSwitch(a1);}
+	if (a2 % 8 != 0){chSwitch(a2);}
+	chSwitch(a3);
+	chSwitch(a4);
+	reloadField();
+                       }
+
+function chSwitch(z){
+	if (z>=0 && z<=63){
+  	 if(arrxx[z]==0){arrxx[z]=1;}
+	   else{arrxx[z]=0;}	
+                          }
+                   }
+
+function reloadField(){
+   var c = document.getElementById("myCanvas");	
+   var ctx = c.getContext("2d");
+    ctx.clearRect(0,0,400,400);
+    ctx.fillStyle = "red";
+      for(var i=0; i<8; i++){
+      for(var j=0; j<8; j++){
+         ctx.strokeRect(i*50,j*50,50,50);
+        if (arrxx[i+(j*8)]==1){ {ctx.fillRect(i*50+2,j*50+2,46,46);}       
+                            }}
+                        }
+                     } 
+
+function checkProgress(){
+    var count=0;
+    for(var i=0; i<arrxx.length;i++){
+      if (arrxx[i]==1){count++;}}
+   var coor ="";
+      if (count<arrxx.length-1){coor = "Remaining " + (arrxx.length-count) + " switches";}
+      else {coor = "O-O-O ! You DID IT!";}
+      document.getElementById("demo").innerHTML = coor; 
+                        }
+ 
+function idleRun(){
+      var u = Math.floor(8 * Math.random());
+      var v = Math.floor(8 * Math.random());
+      togglSwitch(u,v);
+                  }
+  
+</script>
+
+</body>
+</html>
+
